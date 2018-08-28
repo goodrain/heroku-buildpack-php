@@ -114,34 +114,15 @@ if [[ -s "$COMPOSER" ]]; then
 	if [[ ! -f "$COMPOSER_LOCK" ]]; then
 		cat "$COMPOSER" | python -c 'import sys, json; sys.exit(bool(json.load(sys.stdin).get("require", {})))' 2> /dev/null || {
 			mcount "failures.composer_lock.missing"
-			error <<-EOF
-				No '$COMPOSER_LOCK' found!
-				
-				A '$COMPOSER_LOCK' file was not found in your project, but there
-				is a '$COMPOSER' file with dependencies inside 'require'.
-				
-				The lock file is required in order to guarantee reliable and
-				reproducible installation of dependencies across platforms and
-				deploys. You must follow the Composer best practice of having
-				your lock file under version control in order to deploy. The
-				lock file must not be in your '.gitignore'.
-				
-				Please perform the following steps locally on your computer to
-				resolve this issue before attempting another deploy:
-				1) remove '$COMPOSER_LOCK' from file '.gitignore', if present
-				2) if no '$COMPOSER_LOCK' exists, run 'composer update'
-				3) stage the lock file changes using 'git add $COMPOSER_LOCK'
-				4) if you edited '.gitignore', also run 'git add .gitignore'
-				5) commit the change using 'git commit'
-				
-				Please remember to always keep your '$COMPOSER_LOCK' updated in
-				lockstep with '$COMPOSER' to avoid common problems related
-				to dependencies during collaboration and deployment.
-				
-				Please refer to the Composer documentation for further details:
-				https://getcomposer.org/doc/
-				https://getcomposer.org/doc/01-basic-usage.md
-			EOF
+			if [ -z "$SKIP_COMPOSER_LOCK" ];then
+				error <<-EOF
+					No '$COMPOSER_LOCK' found!
+					1) remove '$COMPOSER_LOCK' from file '.gitignore', if present
+					2) if no '$COMPOSER_LOCK' exists, run 'composer update'
+				EOF
+			else
+				warn "No $COMPOSER_LOCK found!"
+			fi
 		}
 	else
 		cat "$COMPOSER_LOCK" | python -mjson.tool &> /dev/null || {
