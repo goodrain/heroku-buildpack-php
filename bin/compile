@@ -121,7 +121,7 @@ if [[ -s "$COMPOSER" ]]; then
 					2) if no '$COMPOSER_LOCK' exists, run 'composer update'
 				EOF
 			else
-				warn "No $COMPOSER_LOCK found!"
+				warning "No $COMPOSER_LOCK found!"
 			fi
 		}
 	else
