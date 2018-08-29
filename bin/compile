@@ -77,15 +77,15 @@ if [[ -s "$COMPOSER" ]]; then
 	if [[ ! -f "$COMPOSER_LOCK" ]]; then
 		cat "$COMPOSER" | python -c 'import sys, json; sys.exit(bool(json.load(sys.stdin).get("require", {})))' 2> /dev/null || {
 			mcount "failures.composer_lock.missing"
-			if [ -z "$SKIP_COMPOSER_LOCK" ];then
+			#if [ -z "$SKIP_COMPOSER_LOCK" ];then
 				error <<-EOF
 					No '$COMPOSER_LOCK' found!
 					1) remove '$COMPOSER_LOCK' from file '.gitignore', if present
 					2) if no '$COMPOSER_LOCK' exists, run 'composer update'
 				EOF
-			else
-				warning "No $COMPOSER_LOCK found!"
-			fi
+			#else
+			#	warning "No $COMPOSER_LOCK found!"
+			#fi
 		}
 	else
 		cat "$COMPOSER_LOCK" | python -mjson.tool &> /dev/null || {
