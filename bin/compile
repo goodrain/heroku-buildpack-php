@@ -128,6 +128,8 @@ s3_url="http://lang.goodrain.me/php/dist-${STACK}-stable/"
 # list of repositories to use is in ascening order of precedence
 export_env_dir "$env_dir" '^HEROKU_PHP_PLATFORM_REPOSITORIES$'
 HEROKU_PHP_PLATFORM_REPOSITORIES="${s3_url} ${HEROKU_PHP_PLATFORM_REPOSITORIES:-}"
+status "$HEROKU_PHP_PLATFORM_REPOSITORIES"
+
 if [[ "${HEROKU_PHP_PLATFORM_REPOSITORIES}" == *" - "* ]]; then
 	# a single "-" in the user supplied string removes everything to the left of it; can be used to delete the default repo
 	notice_inline "Default platform repository disabled."
@@ -141,7 +143,9 @@ fi
 mkdir -p $build_dir/.heroku/php-min
 ln -s $build_dir/.heroku/php-min /app/.heroku/php-min
 
-curl_retry_on_18 --fail --silent --location -o $build_dir/.heroku/php-min.tar.gz "${s3_url}php-min-7.0.31.tar.gz" || {
+curl_retry_on_18 --fail --silent --location -o $build_dir/.heroku/php-min.tar.gz "${s3_url}php-min-7.0.31.tar.gz" && (
+	notice "Download ${s3_url}php-min-7.0.31.tar.gz sucessful"
+) || {
 	mcount "failures.bootstrap.download.php-min"
 	error <<-EOF
 		Failed to download minimal PHP for bootstrapping!
@@ -154,7 +158,9 @@ curl_retry_on_18 --fail --silent --location -o $build_dir/.heroku/php-min.tar.gz
 tar xzf $build_dir/.heroku/php-min.tar.gz -C $build_dir/.heroku/php-min
 rm $build_dir/.heroku/php-min.tar.gz
 
-curl_retry_on_18 --fail --silent --location -o $build_dir/.heroku/composer.tar.gz "${s3_url}composer-1.7.2.tar.gz" || {
+curl_retry_on_18 --fail --silent --location -o $build_dir/.heroku/composer.tar.gz "${s3_url}composer-1.7.2.tar.gz" && (
+	notice "Download: ${s3_url}composer-1.7.2.tar.gz sucessful..."
+) || {
 	mcount "failures.bootstrap.download.composer"
 	error <<-EOF
 		Failed to download Composer for bootstrapping!
