@@ -128,7 +128,7 @@ s3_url="http://lang.goodrain.me/php/dist-${STACK}-stable/"
 # list of repositories to use is in ascening order of precedence
 export_env_dir "$env_dir" '^HEROKU_PHP_PLATFORM_REPOSITORIES$'
 HEROKU_PHP_PLATFORM_REPOSITORIES="${s3_url} ${HEROKU_PHP_PLATFORM_REPOSITORIES:-}"
-status "$HEROKU_PHP_PLATFORM_REPOSITORIES"
+notice "Defalut repo:$HEROKU_PHP_PLATFORM_REPOSITORIES"
 
 if [[ "${HEROKU_PHP_PLATFORM_REPOSITORIES}" == *" - "* ]]; then
 	# a single "-" in the user supplied string removes everything to the left of it; can be used to delete the default repo
@@ -178,6 +178,9 @@ composer() {
 	/app/.heroku/php-min/bin/php /app/.heroku/php/bin/composer "$@"
 }
 export -f composer
+
+# disbale secure-http
+composer config --global secure-http false
 
 # we use --no-plugins just in case the vendor dir is there, see e.g. https://github.com/Ocramius/PackageVersions/issues/64
 composer_vendordir=$(composer config --no-plugins vendor-dir)
